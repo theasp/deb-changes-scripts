@@ -10,4 +10,4 @@ if [ -z "$files" -o -z "$dest" ]; then
   exit 1
 fi
 
-rsync -aPv $(changes-files.sh $files) $dest
+cp -v $(dch-files $files) $dest/

@@ -9,6 +9,7 @@ fi
 
 declare -A CHANGES
 
+# TODO: Parse the changes file, don't just use file name.
 cd $DIR
 for file in *.changes; do
   pkg=${file%%_*}
@@ -30,10 +31,10 @@ for pkg in "${CHANGES[@]}"; do
 
     for v in $(sed -e 's/ /\n/' <<<$pkg \
                  | cut -f 2 -d _  \
-                 | dpkg-sort-versions.pl \
+                 | dpkg-sort-versions \
                  | head -n -1);
     do
-      changes-rm.sh ${versions["$v"]}
+      changes-rm ${versions["$v"]}
     done          
   fi
 done

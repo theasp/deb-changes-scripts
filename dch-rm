@@ -3,5 +3,5 @@
 #set -x
 
 for file in "$@"; do
-  changes-files.sh "$file" | xargs -rp rm
+  dch-files "$file" | xargs -rp rm
 done
