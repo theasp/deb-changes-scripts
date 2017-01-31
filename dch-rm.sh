@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -x
+#set -x
 
 for file in "$@"; do
   changes-files.sh "$file" | xargs -rp rm

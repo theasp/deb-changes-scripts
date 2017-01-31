@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -x
+#set -x
 
 files=${@:1:$((${#@} - 1))}
 dest=${@:${#@}}

@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 DIR=$1
 if [[ -z $DIR ]]; then
@@ -7,8 +8,6 @@ if [[ -z $DIR ]]; then
 fi
 
 declare -A CHANGES
-set -e
-set -x
 
 cd $DIR
 for file in *.changes; do
@@ -18,8 +17,6 @@ for file in *.changes; do
     CHANGES["$pkg"]+=$(printf "%s " $file);
   fi
 done
-
-echo C: $CHANGES[@]
 
 for pkg in "${CHANGES[@]}"; do
   if [[ $(wc -w <<<"$pkg") -gt 1 ]]; then
