@@ -14,7 +14,6 @@ cd $DIR
 for file in *.changes; do
   pkg=${file%%_*}
   if [[ $pkg ]]; then
-    echo $pkg
     CHANGES["$pkg"]+=$(printf "%s " $file);
   fi
 done
