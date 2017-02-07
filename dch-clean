@@ -1,39 +1,46 @@
 #!/bin/bash
-set -e
+
+#set -e
+
+shopt -s nullglob
 
 DIR=$1
 if [[ -z $DIR ]]; then
-  echo "Usage: $0 <dir>" 1>&2
+  echo "Usage: $0 <dir> [dir...]" 1>&2
   exit 1
 fi
 
-declare -A CHANGES
+function get-old-changes {
+  declare -A CHANGES
 
-# TODO: Parse the changes file, don't just use file name.
-cd $DIR
-for file in *.changes; do
-  pkg=${file%%_*}
-  if [[ $pkg ]]; then
-    CHANGES["$pkg"]+=$(printf "%s " $file);
-  fi
-done
+  for file in *.changes; do
+    pkg=${file%%_*}
+    if [[ $pkg ]]; then
+      CHANGES["$pkg"]+=$(printf "%s " $file);
+    fi
+  done
 
-for pkg in "${CHANGES[@]}"; do
-  if [[ $(wc -w <<<"$pkg") -gt 1 ]]; then
-    declare -A versions=()
+  for pkg in "${CHANGES[@]}"; do
+    if [[ $(wc -w <<<"$pkg") -gt 1 ]]; then
+      declare -A versions=()
 
-    for change in $pkg; do
-      v=$(cut -f 2 -d _ <<<"$change")
-      
-      versions["$v"]=$change
-    done
+      for change in $pkg; do
+        v=$(cut -f 2 -d _ <<<"$change")
 
-    for v in $(sed -e 's/ /\n/' <<<$pkg \
-                 | cut -f 2 -d _  \
-                 | dpkg-sort-versions \
-                 | head -n -1);
-    do
-      changes-rm ${versions["$v"]}
-    done          
-  fi
+        versions["$v"]=$change
+      done
+
+      for v in $(sed -e 's/ /\n/' <<<$pkg \
+                   | cut -f 2 -d _  \
+                   | dpkg-sort-versions.pl \
+                   | head -n -1);
+      do
+        echo ${versions["$v"]}
+      done
+    fi
+  done
+}
+
+for dir in "$@"; do
+  (cd $dir && changes-rm.sh $(get-old-changes))
 done
